@@ -14,7 +14,19 @@ import './index.css';
  * A Component takes in parameters, called props.
  * Then they return a hierarchy of views to display via the render method
  */
-class Square extends Component {
+function Square(props) {
+	return (
+		<button
+			className="square"
+			onClick={props.onClick}
+		>
+			{props.value}
+		</button>
+	);
+}
+
+class Board extends Component {
+
 	// components have state by setting this.state in their constructors
 	constructor(props) {
 		// in JS classes, you need to always call super when
@@ -23,41 +35,40 @@ class Square extends Component {
 		// super(props)
 		super(props);
 		this.state = {
-			value: null,
-			clicked: false,
-		}
+			squares: Array(9).fill(null),
+			xNext: true,
+		};
 	}
 
-	// render method
-	render() {
+	handleClick(i) {
+		// make a copy of the array: immutability is important
+		const box = this.state.squares.slice();
+		if (calculateWinner(box) || box[i]) return;
+		box[i] = this.state.xNext ? 'X' : 'O';
+		this.setState({
+			squares: box,
+			xNext: !this.state.xNext,
+		});
+	}
+
+	renderSquare(i) {
 		return (
-			// onClick passes in a function
-			// inorder to remember things in react components use state
-			<button
-				className="square"
-				// by calling this.setState we tell React to re-render that square
-				// whenever its button is clicked
-				onClick={() =>
-					this.state.clicked ?
-						// when you call setSate, React auto updates the child components
-						this.setState({ value: null, clicked: false }) :
-						this.setState({ value: 'X', clicked: true })
-				}
-			>
-				{/* Passed a prop from a parent Board to a child square */}
-				{this.state.value}
-			</button>
+			<Square
+				// props that will be sent to the children components
+
+				// when you call setSate, React auto updates the child components
+				value={this.state.squares[i]}
+				// its conventional to use on[Event] names for props 
+				// handle[Event] for the methods which handle the events
+				onClick={() => this.handleClick(i)}
+			/>
 		);
 	}
-}
-
-class Board extends Component {
-	renderSquare(i) {
-		return <Square value={i} />;
-	}
 
 	render() {
-		const status = 'Next player: X';
+		const winner = calculateWinner(this.state.squares);
+		let status = '';
+		status = !winner ? 'Next player: ' + (this.state.xNext ? 'X' : 'O') : 'Winner: ' + winner;
 
 		return (
 			<div>
@@ -96,6 +107,26 @@ class Game extends Component {
 			</div>
 		);
 	}
+}
+
+function calculateWinner(squares) {
+	const lines = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6],
+	];
+	for (let i = 0; i < lines.length; i++) {
+		const [a, b, c] = lines[i];
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return squares[a];
+		}
+	}
+	return null;
 }
 
 // ========================================
