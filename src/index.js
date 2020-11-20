@@ -1,3 +1,6 @@
+// Currently working on printing:
+// The location for each move in the format (col, row) in the move history list.
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -31,8 +34,6 @@ class Board extends Component {
 		return (
 			<Square
 				// props that will be sent to the children components
-
-				// when you call setSate, React auto updates the child components
 				value={this.props.squares[i]}
 				// its conventional to use on[Event] names for props 
 				// handle[Event] for the methods which handle the events
@@ -89,6 +90,7 @@ class Game extends Component {
 		const squares = current.squares.slice();
 		if (calculateWinner(squares) || squares[i]) return;
 		squares[i] = this.state.xNext ? 'X' : 'O';
+		// when you call setSate, React auto updates the child components
 		this.setState({
 			// concat over push because of immutability
 			history: history.concat([{
