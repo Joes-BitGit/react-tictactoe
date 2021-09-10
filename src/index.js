@@ -80,6 +80,7 @@ class Game extends Component {
 			}],
 			xNext: true,
 			stepNumber: 0,
+			// current: Array(9).fill(null),
 		};
 	}
 
@@ -88,6 +89,7 @@ class Game extends Component {
 		const current = history[history.length - 1];
 		// make a copy of the array: immutability is important
 		const squares = current.squares.slice();
+
 		if (calculateWinner(squares) || squares[i]) return;
 		squares[i] = this.state.xNext ? 'X' : 'O';
 		// when you call setSate, React auto updates the child components
@@ -98,6 +100,7 @@ class Game extends Component {
 			}]),
 			stepNumber: history.length,
 			xNext: !this.state.xNext,
+			//current: ,
 		});
 	}
 
@@ -114,8 +117,9 @@ class Game extends Component {
 		const winner = calculateWinner(current.squares);
 
 		const moves = history.map((step, move) => {
-			const desc = move ?
-				'Go to move #' + move :
+			console.log('step:', move);
+			const description = move ?
+				'Go to move #' + move + ' POS: ' + this.state.current :
 				'Go to game start';
 			return (
 				// if we were displaying data from a database, 
@@ -126,7 +130,7 @@ class Game extends Component {
 					<button
 						onClick={() => this.jumpTo(move)}
 					>
-						{desc}
+						{description}
 					</button>
 				</li>
 			);
